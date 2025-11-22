@@ -18,12 +18,23 @@ const matchSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
+    teamALogo: {
+      type: String,
+      default: "https://i.sstatic.net/l60Hf.png",
+    },
     teamB: {
       type: String,
       required: true,
     },
+    teamBLogo: {
+      type: String,
+      default: "https://i.sstatic.net/l60Hf.png",
+    },
     matchDate: {
       type: Date,
+    },
+    matchResult: {
+      type: String,
     },
     tags: [
       {

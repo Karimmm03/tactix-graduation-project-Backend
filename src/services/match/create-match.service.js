@@ -2,6 +2,7 @@ import { Match } from "../../models/match.model.js";
 import { AppError } from "../../utils/app.error.js";
 import { z } from "zod";
 
+// Validation schema for strings only, no automatic date coercion
 const matchSchema = z.object({
   userId: z.string({ required_error: "User ID is required" }),
   title: z
@@ -14,10 +15,10 @@ const matchSchema = z.object({
   teamB: z
     .string({ required_error: "Team B name is required" })
     .min(2, "Team B name must be at least 2 characters long"),
-  matchDate: z
-    .string({ required_error: "Match date is required" })
-    .refine((val) => !isNaN(Date.parse(val)), "Invalid date format")
-    .optional(),
+  matchDate: z.string({ required_error: "Match date is required" }).optional(),
+  teamALogo: z.string().optional(),
+  teamBLogo: z.string().optional(),
+  matchResult: z.string().optional(),
 });
 
 export const creatMatchService = async (
@@ -26,7 +27,10 @@ export const creatMatchService = async (
   description,
   teamA,
   teamB,
-  matchDate
+  matchDate,
+  teamALogo,
+  teamBLogo,
+  matchResult
 ) => {
   try {
     const parsedResult = matchSchema.safeParse({
@@ -36,6 +40,9 @@ export const creatMatchService = async (
       teamA,
       teamB,
       matchDate,
+      teamALogo,
+      teamBLogo,
+      matchResult,
     });
 
     if (!parsedResult.success) {
@@ -45,14 +52,24 @@ export const creatMatchService = async (
       throw new AppError(400, `Invalid input: ${errorMessages}`);
     }
 
-    const matchDateObj = new Date(matchDate);
+    const dateObj = new Date(matchDate);
+    if (isNaN(dateObj.getTime())) {
+      throw new AppError(
+        400,
+        "Invalid matchDate format. Use YYYY-MM-DD or ISO string."
+      );
+    }
+
     const match = await Match.create({
       userId,
       title,
       description,
       teamA,
       teamB,
-      matchDateObj,
+      matchDate: dateObj,
+      teamALogo,
+      teamBLogo,
+      matchResult,
     });
 
     return {

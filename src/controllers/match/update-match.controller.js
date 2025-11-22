@@ -11,6 +11,9 @@ export const updateMatchController = asyncHandler(async (req, res) => {
     teamA: req.body.teamA,
     teamB: req.body.teamB,
     matchDate: req.body.matchDate,
+    teamALogo: req.body.teamALogo,
+    teamBLogo: req.body.teamBLogo,
+    matchResult: req.body.matchResult,
   };
 
   const result = await updateMatchService(matchId, userId, updateData);

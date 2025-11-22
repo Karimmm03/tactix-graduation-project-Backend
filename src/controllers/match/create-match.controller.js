@@ -8,13 +8,20 @@ export const creatMatchController = asyncHandler(async (req, res) => {
   const teamA = req.body.teamA;
   const teamB = req.body.teamB;
   const matchDate = req.body.matchDate;
+  const teamALogo = req.body.teamALogo;
+  const teamBLogo = req.body.teamBLogo;
+  const matchResult = req.body.matchResult;
+
   const result = await creatMatchService(
     userId,
     title,
     description,
     teamA,
     teamB,
-    matchDate
+    matchDate,
+    teamALogo,
+    teamBLogo,
+    matchResult
   );
 
   res.status(201).json(result);
