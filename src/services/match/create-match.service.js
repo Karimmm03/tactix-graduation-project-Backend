@@ -1,6 +1,7 @@
 import { Match } from "../../models/match.model.js";
 import { AppError } from "../../utils/app.error.js";
 import { z } from "zod";
+import { deleteKeysByPattern } from "../../utils/redis-wild-card-deletion.js";
 
 // Validation schema for strings only, no automatic date coercion
 const matchSchema = z.object({
@@ -71,6 +72,9 @@ export const creatMatchService = async (
       teamBLogo,
       matchResult,
     });
+
+    // Invalidate the Get Matches user because new match been added so it can cause steal data
+    await deleteKeysByPattern(`matches:user:${userId}:*`);
 
     return {
       success: true,

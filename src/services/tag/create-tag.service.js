@@ -1,7 +1,7 @@
 import { Match } from "../../models/match.model.js";
 import { Tag } from "../../models/tags.model.js";
 import { AppError } from "../../utils/app.error.js";
-
+import { redis } from "../../config/redis.config.js";
 export const createTagService = async (
   matchId,
   startTime,
@@ -25,6 +25,10 @@ export const createTagService = async (
       { $push: { tags: tag._id } },
       { new: true }
     );
+
+    // invalidate cached match
+    await redis.del(`match:${matchId}`);
+
     return {
       success: true,
       message: "Tag Created Successfully",

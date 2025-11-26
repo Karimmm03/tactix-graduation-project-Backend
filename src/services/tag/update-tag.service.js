@@ -1,6 +1,7 @@
 import { Tag } from "../../models/tags.model.js";
 import { AppError } from "../../utils/app.error.js";
 import { Match } from "../../models/match.model.js";
+import { redis } from "../../config/redis.config.js";
 export const updateTagService = async (tagId, userId, updateData) => {
   try {
     const tag = await Tag.findById(tagId).populate("matchId");
@@ -19,6 +20,9 @@ export const updateTagService = async (tagId, userId, updateData) => {
       { $set: updateData },
       { new: true }
     );
+
+    // invalidate cached match
+    await redis.del(`match:${tag.matchId._id}`);
 
     return {
       success: true,

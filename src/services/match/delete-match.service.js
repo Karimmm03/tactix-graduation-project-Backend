@@ -1,6 +1,7 @@
 import { Match } from "../../models/match.model.js";
 import { Tag } from "../../models/tags.model.js";
 import { AppError } from "../../utils/app.error.js";
+import { deleteKeysByPattern } from "../../utils/redis-wild-card-deletion.js";
 
 export const deleteMatchService = async (matchId, userId) => {
   try {
@@ -13,6 +14,9 @@ export const deleteMatchService = async (matchId, userId) => {
 
     await Tag.deleteMany({ matchId });
     await Match.findByIdAndDelete({ _id: matchId });
+
+    // Invalidate the Get Matches and Get Match  because new match been deleted so it can cause steal data
+    await deleteKeysByPattern(`matches:user:${userId}:*`);
 
     return {
       success: true,
