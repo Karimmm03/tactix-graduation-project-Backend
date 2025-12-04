@@ -40,7 +40,10 @@ export const registerService = async ({
     throw new AppError(400, `Invalid input: ${errorMessages}`);
   }
 
-  const existing = await User.findOne({ email });
+  // Normalize email to lowercase for consistency
+  const normalizedEmail = email.toLowerCase();
+
+  const existing = await User.findOne({ email: normalizedEmail });
   if (existing) {
     throw new AppError(409, "Email already registered");
   }
@@ -60,10 +63,10 @@ export const registerService = async ({
       }
     }
 
-    console.log("email :", email);
+    console.log("email :", normalizedEmail);
     const user = await User.create({
       userName,
-      email,
+      email: normalizedEmail,
       password: hashedPassword,
       ...(profileImageUrl && { profileImageUrl }),
     });
@@ -85,7 +88,7 @@ export const registerService = async ({
 
     const htmlContent = verifyEmailTemplate(userName, verifyLink);
 
-    await sendEmail(email, "Verify your account", htmlContent);
+    await sendEmail(normalizedEmail, "Verify your account", htmlContent);
     //await sendEmailUsingResend(email, "Verify your account", htmlContent);
     return user;
   } catch (error) {
