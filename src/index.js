@@ -7,6 +7,7 @@ import authRouter from "./routes/auth.router.js";
 import profileRouter from "./routes/profile.router.js";
 import matchRouter from "./routes/match.router.js";
 import TagRouter from "./routes/tag.router.js";
+import panelRouter from "./routes/panel.router.js";
 
 dotenv.config();
 
@@ -21,7 +22,7 @@ app.use(
     //credentials: true,
     methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
     allowedHeaders: "*",
-  })
+  }),
 );
 
 app.use(express.json());
@@ -38,7 +39,7 @@ app.use("/api/auth", authRouter);
 app.use("/api/profile", profileRouter);
 app.use("/api/match", matchRouter);
 app.use("/api/tag", TagRouter);
-
+app.use("/api/panel", panelRouter);
 app.use(errorHandler);
 
 const port = process.env.PORT || 3000;
